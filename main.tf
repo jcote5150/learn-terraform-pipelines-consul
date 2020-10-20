@@ -1,13 +1,3 @@
-terraform {
-  backend "remote" {
-    organization = "jcote-deployments"
-
-    workspaces {
-      name = "learn-terraform-pipelines-consul"
-    }
-  }
-}
-
 data "terraform_remote_state" "cluster" {
   backend = "remote"
   config = {
