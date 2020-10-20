@@ -1,6 +1,6 @@
 terraform {
   backend "remote" {
-    organization = "hashicorp-learn"
+    organization = "jcote-deployments"
 
     workspaces {
       name = "learn-terraform-pipelines-consul"
