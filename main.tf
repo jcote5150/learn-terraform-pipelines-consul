@@ -1,21 +1,40 @@
+terraform {
+  backend "remote" {
+    organization = "joelinthecloud"
+
+    workspaces {
+      name = "learn-terraform-pipelines-consul"
+    }
+  }
+}
+
+data "terraform_remote_state" "cluster" {
+  backend = "remote"
+  config = {
+    organization = var.organization
+    workspaces = {
+      name = var.cluster_workspace
+    }
+  }
+}
+
 provider "kubernetes" {
   version = "~> 1.11"
 
   load_config_file       = false
-  host                   = "34.123.96.5"
-  username               = "mwhashigkeadmin"
-  password               = "4<Lb{u3Q=x(z9gY`"
-  cluster_ca_certificate = "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURLekNDQWhPZ0F3SUJBZ0lSQUlnT2JoNzJEZWJ3WDY0cnJjbmtYL293RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa1pXSTFOV1k0WVdNdE4yUXpOeTAwWm1aakxXSmhZak10WVRBM1pUQmtZelUwWVRabApNQjRYRFRJd01UQXlNREUyTkRZd05Wb1hEVEkxTVRBeE9URTNORFl3TlZvd0x6RXRNQ3NHQTFVRUF4TWtaV0kxCk5XWTRZV010TjJRek55MDBabVpqTFdKaFlqTXRZVEEzWlRCa1l6VTBZVFpsTUlJQklqQU5CZ2txaGtpRzl3MEIKQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBbTE1dGhrMlJsTVczakRKRTIranliWUIwNSsyVFd5WVgyY1JjakdEWQo0MlUxYmY5UWNlK0FSK0lWckZlRUZaOW41MGs1R2pkZTFqQWI1ZFBxeFExZjl4dTlZdGowLzI0dmJzSmVqRkl2ClZwWWtKbFN4a285aEljTld4Nis4eWthQUtkTkJrYURWc3UxejFiUUlaejNtdk84SXNrRFJycU9ybSt4dC9KS0oKVUQ3dHRyWTQ5R1puQVpNbG9ldHplY0tmWVd1cWQxdEZUMzg1TUlrNmtrbHVpUXp4OGtyZ3F1UktsVW1wT1Ntdgo5SE51eUpyM3FXSWxXYzN4ZnA5OTlXRFlybWducm5qMkFsVUlVNzM3dVhWcU96RjN5Znh0REQrMER5QUcxeXgzCmdVUHdTeTYwakNKNTRCV2w3aEk4RktockdtVDdyTHFjQ29IYXJBdDlQdGFiRVFJREFRQUJvMEl3UURBT0JnTlYKSFE4QkFmOEVCQU1DQWdRd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBZEJnTlZIUTRFRmdRVTJyZWhqbzFYVUU2NApwSWNkWjJTVDdyVTV3dUF3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUc0UWRyVDN1dzVVRmd2ME1iOHNRWEZZCkwycFhueUxnQ010WU1reVpCRHJyL1BKUEFQQlg5MHRYRkNCUmpJdXpHV0NPMUdXKzUraFRLcTdlR08yTzJ0MncKS3JsZmJpMEVBRHRYMy9NRFlQNC9IREhmQUJyUnduTy9JSzFYQm5LR3hWQWRiSTJINXh4aEU2a05CMlYzdThGVApBazM0V2pCUlZRSkdOcDROeHUveExKVGdUbkJjWmxMMXRSTWhRVlJkaXU5aGxtZ1VkZWpmcllPNytraERXVTM3CitIWXA2Y0xXTXVmR0gxWC9hc2Yvc2ZDY1ovNGJ5amVLUDVwa2s3Uk9hSHZ2YmhyNjBuOVh2ZWUwaFl4SklVdXkKR3ZoeStZWHdQT1pMU0JjTWNsV0VCSVlIbDBmWHNlWm0zOGpmMkZsSzlISExjUjFITXUraG1iQm55dXR4YzZrPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+  host                   = data.terraform_remote_state.cluster.outputs.host
+  username               = data.terraform_remote_state.cluster.outputs.username
+  password               = data.terraform_remote_state.cluster.outputs.password
+  cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.cluster_ca_certificate
 }
 
 provider "helm" {
   version = "~> 1.0"
   kubernetes {
     load_config_file       = false
-    host                   = "34.123.96.5"
-    username               = "mwhashigkeadmin"
-    password               = "4<Lb{u3Q=x(z9gY`"
-    cluster_ca_certificate =  "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURLekNDQWhPZ0F3SUJBZ0lSQUlnT2JoNzJEZWJ3WDY0cnJjbmtYL293RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa1pXSTFOV1k0WVdNdE4yUXpOeTAwWm1aakxXSmhZak10WVRBM1pUQmtZelUwWVRabApNQjRYRFRJd01UQXlNREUyTkRZd05Wb1hEVEkxTVRBeE9URTNORFl3TlZvd0x6RXRNQ3NHQTFVRUF4TWtaV0kxCk5XWTRZV010TjJRek55MDBabVpqTFdKaFlqTXRZVEEzWlRCa1l6VTBZVFpsTUlJQklqQU5CZ2txaGtpRzl3MEIKQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBbTE1dGhrMlJsTVczakRKRTIranliWUIwNSsyVFd5WVgyY1JjakdEWQo0MlUxYmY5UWNlK0FSK0lWckZlRUZaOW41MGs1R2pkZTFqQWI1ZFBxeFExZjl4dTlZdGowLzI0dmJzSmVqRkl2ClZwWWtKbFN4a285aEljTld4Nis4eWthQUtkTkJrYURWc3UxejFiUUlaejNtdk84SXNrRFJycU9ybSt4dC9KS0oKVUQ3dHRyWTQ5R1puQVpNbG9ldHplY0tmWVd1cWQxdEZUMzg1TUlrNmtrbHVpUXp4OGtyZ3F1UktsVW1wT1Ntdgo5SE51eUpyM3FXSWxXYzN4ZnA5OTlXRFlybWducm5qMkFsVUlVNzM3dVhWcU96RjN5Znh0REQrMER5QUcxeXgzCmdVUHdTeTYwakNKNTRCV2w3aEk4RktockdtVDdyTHFjQ29IYXJBdDlQdGFiRVFJREFRQUJvMEl3UURBT0JnTlYKSFE4QkFmOEVCQU1DQWdRd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBZEJnTlZIUTRFRmdRVTJyZWhqbzFYVUU2NApwSWNkWjJTVDdyVTV3dUF3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUc0UWRyVDN1dzVVRmd2ME1iOHNRWEZZCkwycFhueUxnQ010WU1reVpCRHJyL1BKUEFQQlg5MHRYRkNCUmpJdXpHV0NPMUdXKzUraFRLcTdlR08yTzJ0MncKS3JsZmJpMEVBRHRYMy9NRFlQNC9IREhmQUJyUnduTy9JSzFYQm5LR3hWQWRiSTJINXh4aEU2a05CMlYzdThGVApBazM0V2pCUlZRSkdOcDROeHUveExKVGdUbkJjWmxMMXRSTWhRVlJkaXU5aGxtZ1VkZWpmcllPNytraERXVTM3CitIWXA2Y0xXTXVmR0gxWC9hc2Yvc2ZDY1ovNGJ5amVLUDVwa2s3Uk9hSHZ2YmhyNjBuOVh2ZWUwaFl4SklVdXkKR3ZoeStZWHdQT1pMU0JjTWNsV0VCSVlIbDBmWHNlWm0zOGpmMkZsSzlISExjUjFITXUraG1iQm55dXR4YzZrPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
-
+    host                   = data.terraform_remote_state.cluster.outputs.host
+    username               = data.terraform_remote_state.cluster.outputs.username
+    password               = data.terraform_remote_state.cluster.outputs.password
+    cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.cluster_ca_certificate
   }
 }
